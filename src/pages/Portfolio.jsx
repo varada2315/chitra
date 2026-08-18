@@ -58,111 +58,7 @@ export default function Portfolio({ onNavigate }) {
         />
       </section>
 
-      {/* 2. FEATURED GALLERIES SECTION */}
-      <section style={{ background: '#eae5db', color: '#131312', padding: 'clamp(4rem, 8vh, 7rem) var(--pad)' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'center' }}>
-          
-          <motion.h2 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            style={{ 
-              fontFamily: 'var(--sans)', 
-              fontWeight: 600, 
-              fontSize: 'clamp(1.6rem, 3.5vw, 2.6rem)', 
-              letterSpacing: '0.18em', 
-              textTransform: 'uppercase',
-              marginBottom: '3.5rem',
-              color: '#131312'
-            }}
-          >
-            FEATURED GALLERIES
-          </motion.h2>
 
-          {/* Polaroid Framed Gallery Cards */}
-          <div 
-            style={{ 
-              display: 'grid', 
-              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
-              gap: '2.5rem', 
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            {/* Card 1: Left Tilted */}
-            <motion.div
-              initial={{ opacity: 0, y: 40, rotate: -6 }}
-              whileInView={{ opacity: 1, y: 0, rotate: -4 }}
-              whileHover={{ scale: 1.05, rotate: 0, zIndex: 10 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              onClick={() => { setSelectedGallery(coupleGrid[0]); setActiveOption(1); }}
-              style={{
-                background: '#ffffff',
-                padding: '1.2rem 1.2rem 2.2rem 1.2rem',
-                boxShadow: '0 20px 40px rgba(0,0,0,0.12)',
-                cursor: 'pointer'
-              }}
-            >
-              <div style={{ aspectRatio: '4/5', overflow: 'hidden', marginBottom: '1.2rem' }}>
-                <img src="assets/images/collage_closeup.png" alt="Traditional Weddings" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              </div>
-              <span style={{ fontFamily: 'var(--serif)', fontStyle: 'italic', fontSize: '1.2rem', color: '#131312', letterSpacing: '0.05em' }}>
-                TRADITIONAL COVERAGE
-              </span>
-            </motion.div>
-
-            {/* Card 2: Center Straight Polaroid Frame */}
-            <motion.div
-              initial={{ opacity: 0, y: 40, rotate: 0 }}
-              whileInView={{ opacity: 1, y: 0, rotate: 0 }}
-              whileHover={{ scale: 1.05, zIndex: 10 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              onClick={() => { setSelectedGallery(coupleGrid[1]); setActiveOption(2); }}
-              style={{
-                background: '#131312',
-                color: '#eae5db',
-                padding: '1.4rem 1.4rem 2.4rem 1.4rem',
-                boxShadow: '0 25px 50px rgba(0,0,0,0.22)',
-                cursor: 'pointer'
-              }}
-            >
-              <div style={{ aspectRatio: '4/5', overflow: 'hidden', marginBottom: '1.2rem' }}>
-                <img src="assets/images/blog_dance.png" alt="Destination Weddings" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              </div>
-              <span style={{ fontFamily: 'var(--serif)', fontStyle: 'italic', fontSize: '1.3rem', letterSpacing: '0.05em' }}>
-                DESTINATION WEDDINGS
-              </span>
-            </motion.div>
-
-            {/* Card 3: Right Tilted */}
-            <motion.div
-              initial={{ opacity: 0, y: 40, rotate: 6 }}
-              whileInView={{ opacity: 1, y: 0, rotate: 4 }}
-              whileHover={{ scale: 1.05, rotate: 0, zIndex: 10 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              onClick={() => { setSelectedGallery(coupleGrid[2]); setActiveOption(3); }}
-              style={{
-                background: '#ffffff',
-                padding: '1.2rem 1.2rem 2.2rem 1.2rem',
-                boxShadow: '0 20px 40px rgba(0,0,0,0.12)',
-                cursor: 'pointer'
-              }}
-            >
-              <div style={{ aspectRatio: '4/5', overflow: 'hidden', marginBottom: '1.2rem' }}>
-                <img src="assets/images/exp_couples.png" alt="Pre-Wedding Sessions" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              </div>
-              <span style={{ fontFamily: 'var(--serif)', fontStyle: 'italic', fontSize: '1.2rem', color: '#131312', letterSpacing: '0.05em' }}>
-                PRE WEDDING COVERAGE
-              </span>
-            </motion.div>
-          </div>
-
-        </div>
-      </section>
 
       {/* 3. TESTIMONIAL QUOTE BANNER */}
       <section style={{ background: '#0a0a0b', borderTop: '1px solid var(--hair)', borderBottom: '1px solid var(--hair)', padding: 'clamp(4rem, 9vh, 6rem) var(--pad)', textAlign: 'center' }}>
@@ -377,8 +273,10 @@ export default function Portfolio({ onNavigate }) {
                     </div>
                     
                     <div style={{ textAlign: 'center', padding: '2rem', border: '1px solid var(--hair)', aspectRatio: '3/4', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                      <span style={{ fontFamily: 'var(--serif)', fontSize: '2.5rem', fontStyle: 'italic', color: 'var(--brass)' }}>CHITRA</span>
-                      <span className="label" style={{ marginTop: '1rem' }}>WEDDING STORIES</span>
+                      <div className="mark">
+                        <span className="mark-main">CHITRA</span>
+                        <small className="mark-sub">WEDDINGS</small>
+                      </div>
                     </div>
 
                     <div style={{ aspectRatio: '3/4', overflow: 'hidden' }}>

@@ -5,7 +5,9 @@ import Footer from './components/Footer';
 // Pages
 import Home from './pages/Home';
 import Films from './pages/Films';
+import Vlogs from './pages/Vlogs';
 import Portfolio from './pages/Portfolio';
+import Mentorship from './pages/Mentorship';
 import About from './pages/About';
 import Contact from './pages/Contact';
 
@@ -13,6 +15,7 @@ function App() {
   const [currentPage, setCurrentPage] = useState('home');
   const [pageClass, setPageClass] = useState('');
   const [scrollPercent, setScrollPercent] = useState(0);
+  const [loadingProgress, setLoadingProgress] = useState(0);
 
   // Page navigation transition classes with cinematic letterbox shutter curtain
   const handleNavigate = (page) => {
@@ -34,21 +37,50 @@ function App() {
     }, 780);
   };
 
-  // Preloader arrival timer on initial application load
+  // On Page Refresh / Initial Load: Always reset to Home Page at the top (0, 0)
   useEffect(() => {
+    // Disable browser scroll restoration on refresh
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+
+    // Clear hash & reset to top of Home Page instantly
+    if (window.location.hash) {
+      window.history.replaceState(null, '', window.location.pathname);
+    }
+    setCurrentPage('home');
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+
     const preloader = document.getElementById('preloader-overlay');
+    const startTime = Date.now();
+    const duration = 1400;
+
+    const progressInterval = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const pct = Math.min(100, Math.floor((elapsed / duration) * 100));
+      setLoadingProgress(pct);
+
+      if (pct >= 100) {
+        clearInterval(progressInterval);
+      }
+    }, 25);
+
     const timer = setTimeout(() => {
       document.body.classList.add('ready');
       document.body.style.overflow = '';
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
       if (preloader) {
         preloader.classList.add('done');
         setTimeout(() => {
           preloader.style.display = 'none';
-        }, 1200);
+        }, 1000);
       }
     }, 1800);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearInterval(progressInterval);
+      clearTimeout(timer);
+    };
   }, []);
 
   // Split headings into line-mask spans dynamically on page change
@@ -83,17 +115,17 @@ function App() {
     return () => observer.disconnect();
   }, [currentPage]);
 
-  // Scroll animations: scroll-rail updates & adaptive navbar text luma tones
+  // Scroll animations: scroll-rail updates & smooth adaptive navbar text colors
   useEffect(() => {
     const handleScroll = () => {
       const scrolled = window.scrollY;
       
       // 1. Scroll rail updates
       const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const pct = totalHeight > 0 ? Math.min(100, Math.max(0, scrolled / totalHeight * 100)) : 0;
+      const pct = totalHeight > 0 ? Math.min(100, Math.max(0, (scrolled / totalHeight) * 100)) : 0;
       setScrollPercent(pct);
 
-      // 2. Adaptive navbar text colors (overlaps bright .on-bone sections)
+      // 2. Smooth adaptive navbar & section theme color transition
       const navbar = document.querySelector('.nav');
       const boneSections = document.querySelectorAll('.on-bone');
       if (navbar) {
@@ -102,7 +134,8 @@ function App() {
         
         boneSections.forEach((sec) => {
           const secRect = sec.getBoundingClientRect();
-          if (navRect.bottom > secRect.top && navRect.top < secRect.bottom) {
+          // Smooth threshold overlap detection
+          if (navRect.bottom > secRect.top + 30 && navRect.top < secRect.bottom - 30) {
             overlapsBone = true;
           }
         });
@@ -125,13 +158,17 @@ function App() {
     };
   }, [currentPage]);
 
-  // Page router mapping
+  // Page Component Router
   const renderPage = () => {
     switch (currentPage) {
       case 'home':
         return <Home onNavigate={handleNavigate} />;
       case 'films':
-        return <Films />;
+        return <Films onNavigate={handleNavigate} />;
+      case 'vlogs':
+        return <Vlogs onNavigate={handleNavigate} />;
+      case 'mentorship':
+        return <Mentorship onNavigate={handleNavigate} />;
       case 'portfolio':
         return <Portfolio onNavigate={handleNavigate} />;
       case 'about':
@@ -150,15 +187,31 @@ function App() {
       <div className="lb-bar bot" aria-hidden="true"></div>
       <div className="lb-title" aria-hidden="true">CHITRA WEDDINGS</div>
 
-      {/* Root-Level 3-2-1 Preloader Overlay */}
+      {/* Root-Level Luxury Loading Screen Overlay */}
       <div className="loader" aria-hidden="true" id="preloader-overlay">
-        <div className="leader">
-          <div className="sweep"></div>
-          <span className="num n3">3</span>
-          <span className="num n2">2</span>
-          <span className="num n1">1</span>
+        <div className="loader-brand-unit">
+          {/* Real-time Numeric Count-up Display */}
+          <div className="loader-num-badge">
+            <span className="loader-num-val">{String(loadingProgress).padStart(2, '0')}</span>
+            <span className="loader-num-pct">%</span>
+          </div>
+
+          <div className="loader-brand-divider" aria-hidden="true"></div>
+
+          {/* Authentic Brand Identity Unit */}
+          <div className="loader-brand-text">
+            <div className="mark loader-mark">
+              <span className="mark-main">CHITRA</span>
+              <small className="mark-sub">WEDDINGS</small>
+            </div>
+            <span className="loader-brand-subtitle">Wedding Photography &amp; Videography Services</span>
+          </div>
         </div>
-        <span className="label sub">Chitra Weddings <span className="tick">·</span> Wedding Photography &amp; Videography</span>
+
+        {/* Minimal Smooth Progress Fill */}
+        <div className="loader-progress-bar">
+          <div className="loader-progress-fill" style={{ transform: `scaleX(${loadingProgress / 100})` }}></div>
+        </div>
       </div>
 
       <Navbar currentPage={currentPage} onNavigate={handleNavigate} />

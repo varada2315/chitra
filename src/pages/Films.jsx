@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 
 const filmsList = [
   {
@@ -50,7 +51,7 @@ const filmsList = [
     location: "Seaside Vows"
   },
   {
-    vimeoId: "746685962",
+    vimeoId: "891737638",
     img: "assets/images/rainbow_couple.png",
     num: "vii.",
     names: "Island Pre-Wedding Film",
@@ -58,7 +59,7 @@ const filmsList = [
     location: "Coastal Sessions"
   },
   {
-    vimeoId: "749278985",
+    vimeoId: "766281509",
     img: "assets/images/meet_me_arch.png",
     num: "viii.",
     names: "Anniversary & Reception Story",
@@ -127,8 +128,12 @@ export default function Films() {
             {filmsList.map((film, index) => {
               const isDimmed = hoveredIdx !== null && hoveredIdx !== index;
               return (
-                <div 
+                <motion.div 
                   key={index} 
+                  initial={{ opacity: 0, y: 35 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-40px' }}
+                  transition={{ duration: 0.65, delay: (index % 2) * 0.12 }}
                   style={{ 
                     perspective: '1000px',
                     opacity: isDimmed ? 0.38 : 1,
@@ -177,7 +182,7 @@ export default function Films() {
                       {film.venue} {film.location && <><span className="tick">·</span> {film.location}</>}
                     </span>
                   </div>
-                </div>
+                </motion.div>
               );
             })}
           </div>
@@ -188,7 +193,7 @@ export default function Films() {
           <span className="label rv">Your Love Story Deserves Beauty</span>
           <h2 className="display rv d1">Let's <em>Start</em> Your Journey.</h2>
           <div className="rule rv d1" aria-hidden="true" style={{ width: '64px', height: '1px', background: 'var(--brass)', margin: '1.2rem 0' }}></div>
-          <a className="btn rv d2" href="#contact" onClick={(e) => { e.preventDefault(); window.location.hash = 'contact'; }}>
+          <a className="btn rv d2" href="#contact" onClick={(e) => { e.preventDefault(); if (onNavigate) onNavigate('contact'); }}>
             <span>Enquire Now</span>
           </a>
         </section>
