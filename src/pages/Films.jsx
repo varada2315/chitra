@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 const filmsList = [
   {
     vimeoId: "332887606",
-    img: "assets/images/exp_weddings.png",
+    img: "assets/images/exp_weddings.webp",
     num: "i.",
     names: "Traditional Wedding Film",
     venue: "Chitra Weddings",
@@ -12,7 +12,7 @@ const filmsList = [
   },
   {
     vimeoId: "1027095536",
-    img: "assets/images/bio_couple.png",
+    img: "assets/images/bio_couple.webp",
     num: "ii.",
     names: "Destination Wedding Film",
     venue: "Chitra Weddings",
@@ -20,7 +20,7 @@ const filmsList = [
   },
   {
     vimeoId: "914290878",
-    img: "assets/images/fav_couple.png",
+    img: "assets/images/fav_couple.webp",
     num: "iii.",
     names: "Pre-Wedding Cinematic Story",
     venue: "Chitra Weddings",
@@ -28,7 +28,7 @@ const filmsList = [
   },
   {
     vimeoId: "382794147",
-    img: "assets/images/exp_couples.png",
+    img: "assets/images/exp_couples.webp",
     num: "iv.",
     names: "Engagement Celebration Film",
     venue: "Chitra Weddings",
@@ -36,7 +36,7 @@ const filmsList = [
   },
   {
     vimeoId: "891737638",
-    img: "assets/images/hero_home.png",
+    img: "assets/images/hero_home.webp",
     num: "v.",
     names: "Traditional Grand Ceremony",
     venue: "Chitra Weddings",
@@ -44,7 +44,7 @@ const filmsList = [
   },
   {
     vimeoId: "766281509",
-    img: "assets/images/hero_meet_me.png",
+    img: "assets/images/hero_meet_me.webp",
     num: "vi.",
     names: "Destination Love Story",
     venue: "Chitra Weddings",
@@ -52,7 +52,7 @@ const filmsList = [
   },
   {
     vimeoId: "891737638",
-    img: "assets/images/rainbow_couple.png",
+    img: "assets/images/rainbow_couple.webp",
     num: "vii.",
     names: "Island Pre-Wedding Film",
     venue: "Chitra Weddings",
@@ -60,7 +60,7 @@ const filmsList = [
   },
   {
     vimeoId: "766281509",
-    img: "assets/images/meet_me_arch.png",
+    img: "assets/images/meet_me_arch.webp",
     num: "viii.",
     names: "Anniversary & Reception Story",
     venue: "Chitra Weddings",
@@ -93,6 +93,12 @@ export default function Films() {
     setLightboxBoot(true);
     setLightboxLit(false);
     document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    window.history.pushState(
+      { page: 'films', modal: 'film', vimeoId },
+      '',
+      window.location.pathname + '#film'
+    );
 
     setTimeout(() => {
       setLightboxLit(true);
@@ -105,7 +111,40 @@ export default function Films() {
     setLightboxLit(false);
     setLightboxBoot(false);
     document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
+    if (window.location.hash === '#film') {
+      window.history.back();
+    }
   };
+
+  // Close film lightbox on browser back / swipe back or Escape key
+  useEffect(() => {
+    const handleFilmPop = () => {
+      if (window.location.hash !== '#film' && activeVideo) {
+        setActiveVideo(null);
+        setLightboxLit(false);
+        setLightboxBoot(false);
+        document.body.style.overflow = '';
+        document.documentElement.style.overflow = '';
+      }
+    };
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && activeVideo) {
+        closeFilm();
+      }
+    };
+
+    window.addEventListener('popstate', handleFilmPop);
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('popstate', handleFilmPop);
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+    };
+  }, [activeVideo]);
 
   return (
     <div className="page-content-wrapper">
@@ -157,7 +196,7 @@ export default function Films() {
                       }}
                       aria-label={`Play ${film.names}`}
                     >
-                      <img src={film.img} alt={film.names} />
+                      <img src={film.img} alt={film.names} loading="lazy" decoding="async" />
                       
                       <span className="brk tl" aria-hidden="true"></span>
                       <span className="brk tr" aria-hidden="true"></span>

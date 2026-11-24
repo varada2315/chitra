@@ -16,7 +16,7 @@ export default function MeetMe() {
         <div className="container">
           <div className="about-grid">
             <div className="portrait fade-in-up">
-              <img src="assets/images/meet_me_arch.png" alt="Marie and Bennet hugging" />
+              <img src="assets/images/meet_me_arch.webp" alt="Marie and Bennet hugging" loading="lazy" decoding="async" />
             </div>
             
             <div className="fade-in-up" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
@@ -56,10 +56,10 @@ export default function MeetMe() {
       {/* Stills Strip scrolling banner */}
       <section className="sec" style={{ paddingLeft: 0, paddingRight: 0 }}>
         <div className="stills">
-          <img src="assets/images/collage_tennis.png" alt="Couple on tennis court" />
-          <img src="assets/images/collage_smile.png" alt="Couple portrait smile" />
-          <img src="assets/images/collage_piggyback.png" alt="Piggyback on beach" />
-          <img src="assets/images/collage_proposal.png" alt="Proposal forest" />
+          <img src="assets/images/collage_tennis.webp" alt="Couple on tennis court" loading="lazy" decoding="async" />
+          <img src="assets/images/collage_smile.webp" alt="Couple portrait smile" loading="lazy" decoding="async" />
+          <img src="assets/images/collage_piggyback.webp" alt="Piggyback on beach" loading="lazy" decoding="async" />
+          <img src="assets/images/collage_proposal.webp" alt="Proposal forest" loading="lazy" decoding="async" />
         </div>
       </section>
 
@@ -74,7 +74,7 @@ export default function MeetMe() {
                 <span className="q">Do you travel for weddings?</span>
                 <span className="faq-x">+</span>
               </summary>
-              <p className="muted">Yes, we film all across Southern California, Montana, and worldwide. Travel costs are fully built into our custom destination packages so there are no surprise fees.</p>
+              <p className="muted">Yes, we travel across India and custom destination locations. Travel costs are fully built into our custom packages so there are no surprise fees.</p>
             </details>
             
             <details className="faq-item">

@@ -1,31 +1,66 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 export default function Navbar({ currentPage, onNavigate }) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
-    if (!isOpen) {
-      document.body.classList.add('menu-open');
-    } else {
-      document.body.classList.remove('menu-open');
+  const openMenu = () => {
+    setIsOpen(true);
+    document.body.classList.add('menu-open');
+    window.history.pushState(
+      { page: currentPage, modal: 'menu' },
+      '',
+      window.location.pathname + '#menu'
+    );
+  };
+
+  const closeMenu = () => {
+    setIsOpen(false);
+    document.body.classList.remove('menu-open');
+    if (window.location.hash === '#menu') {
+      window.history.back();
     }
   };
+
+  const toggleMenu = () => {
+    if (!isOpen) {
+      openMenu();
+    } else {
+      closeMenu();
+    }
+  };
+
+  // Close menu on browser back / swipe back or Escape key
+  useEffect(() => {
+    const handleMenuPop = () => {
+      if (window.location.hash !== '#menu' && isOpen) {
+        setIsOpen(false);
+        document.body.classList.remove('menu-open');
+      }
+    };
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && isOpen) {
+        closeMenu();
+      }
+    };
+
+    window.addEventListener('popstate', handleMenuPop);
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('popstate', handleMenuPop);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen]);
 
   const handleNavClick = (page) => {
     setIsOpen(false);
     document.body.classList.remove('menu-open');
+    if (window.location.hash === '#menu') {
+      window.history.replaceState({ page: currentPage }, '', window.location.pathname);
+    }
     if (page === 'packages') {
-      if (currentPage !== 'home') {
-        onNavigate('home');
-        setTimeout(() => {
-          const el = document.getElementById('services-packages');
-          if (el) el.scrollIntoView({ behavior: 'smooth' });
-        }, 120);
-      } else {
-        const el = document.getElementById('services-packages');
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
-      }
+      onNavigate('packages');
       return;
     }
     onNavigate(page);
@@ -61,19 +96,7 @@ export default function Navbar({ currentPage, onNavigate }) {
             onClick={() => handleNavClick('packages')} 
             className={currentPage === 'packages' ? 'active' : ''}
           >
-            Services / Packages
-          </button>
-          <button 
-            onClick={() => handleNavClick('films')} 
-            className={currentPage === 'films' ? 'active' : ''}
-          >
-            Films
-          </button>
-          <button 
-            onClick={() => handleNavClick('vlogs')} 
-            className={currentPage === 'vlogs' ? 'active' : ''}
-          >
-            Vlogs
+            Collections
           </button>
           <button 
             onClick={() => handleNavClick('portfolio')} 
@@ -125,7 +148,7 @@ export default function Navbar({ currentPage, onNavigate }) {
 
           <button 
             className="menu-close" 
-            onClick={toggleMenu} 
+            onClick={closeMenu} 
             aria-label="Close Menu"
           >
             <span>CLOSE</span> <span className="close-x">✕</span>
@@ -145,9 +168,7 @@ export default function Navbar({ currentPage, onNavigate }) {
           {/* Navigation Links */}
           <nav className="menu-nav">
             <button className={`big ${currentPage === 'home' ? 'active' : ''}`} onClick={() => handleNavClick('home')}>Home</button>
-            <button className={`big ${currentPage === 'packages' ? 'active' : ''}`} onClick={() => handleNavClick('packages')}>Services / Packages</button>
-            <button className={`big ${currentPage === 'films' ? 'active' : ''}`} onClick={() => handleNavClick('films')}>Films</button>
-            <button className={`big ${currentPage === 'vlogs' ? 'active' : ''}`} onClick={() => handleNavClick('vlogs')}>Vlogs</button>
+            <button className={`big ${currentPage === 'packages' ? 'active' : ''}`} onClick={() => handleNavClick('packages')}>Collections</button>
             <button className={`big ${currentPage === 'portfolio' ? 'active' : ''}`} onClick={() => handleNavClick('portfolio')}>Portfolio</button>
             <button className={`big ${currentPage === 'about' ? 'active' : ''}`} onClick={() => handleNavClick('about')}>About</button>
             <button className={`big ${currentPage === 'contact' ? 'active' : ''}`} onClick={() => handleNavClick('contact')}>Contact</button>

@@ -3,19 +3,25 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const slides = [
   {
-    img: "assets/images/collage_closeup.png",
-    quote: "Chitra Weddings captured moments we didn't even realize were happening. Our film and photos leave a lasting legacy for our family.",
-    author: "Adarsh & Team Client"
+    img: "/Photo%202%20replace.JPG.jpeg",
+    objectPosition: "center 14%",
+    quote: "Choosing Chitra Weddings to capture our big day was the best decision we made. From the small, intimate glances to the grand celebrations, they didn't just take photos—they captured the entire soul of our wedding. Looking through the gallery feels like reliving the day all over again. They have a magical way of being everywhere at once without ever being intrusive. If you want your wedding memories to feel like a work of art, look no further !!",
+    author: "BIJAY BHARATI & SOUMYA"
   },
   {
-    img: "assets/images/collage_smile.png",
-    quote: "They alleviated all our stress on the day, capturing the essence of our unique love story so we could simply be present in the joy of our union.",
-    author: "Luke & Anna"
+    img: "assets/images/testimonial_soumya_kajol.webp",
+    quote: "Had a wonderful experience with Chitra Weddings! The team was professional, friendly, and very creative. Highly recommended for anyone looking for a reliable and skilled photography team!!",
+    author: "SOUMYA & KAJOL"
   },
   {
-    img: "assets/images/collage_piggyback.png",
-    quote: "Masterful storytellers. From pre-wedding to the traditional ceremony, every memory was beautifully told.",
-    author: "Matt & Leslie"
+    img: "assets/images/testimonial_priya_ashish.webp",
+    quote: "Chitra Weddings did an absolutely outstanding job capturing every beautiful moment of our special day. Their team was incredibly professional, creative, and patient throughout. They didn’t just click pictures — they told a story. Every frame is filled with emotion, detail, and artistry. We could clearly see the effort and passion they put into their work, and we’re so grateful for how they made us feel comfortable in front of the camera. If you're looking for someone to capture memories that last a lifetime, Chitra Weddings is the one. Thank you for making our wedding unforgettable! Thank you Adarsh and team💖",
+    author: "PRIYA & ASHISH"
+  },
+  {
+    img: "assets/images/testimonial_shashikant_swikruti.webp",
+    quote: "Best wedding event to cover your big day . The owner specially put all his dedication for best output. One of the best photography in puri i recommend everyone without second thought. Even my family members are now fan of this group . Specially Adarsh bhai bunu bhai chitta bhai and complete team . Best one 👍",
+    author: "SHASHIKANT & SWIKRUTI"
   }
 ];
 
@@ -62,84 +68,52 @@ function AnimatedNumber({ end, decimals = 0, duration = 1.6 }) {
   return <span ref={elementRef}>{displayValue.toFixed(decimals)}</span>;
 }
 
-// 4 PINNED FEATURED PORTFOLIO STORIES DATA FROM PORTFOLIO SECTION
-const storiesData = [
-  {
-    id: 1,
-    stepNum: "01 / 04",
-    category: "TRADITIONAL COVERAGE",
-    title: "Traditional Coverage",
-    couple: "Edmond & Lauren",
-    location: "Chitra Weddings Full Coverage",
-    description: "Full sacred ritual coverage capturing emotional vows, intricate traditional attire, and grand evening celebrations with cinematic grace.",
-    img: "assets/images/collage_closeup.png",
-    vimeoId: "332887606"
-  },
-  {
-    id: 2,
-    stepNum: "02 / 04",
-    category: "DESTINATION WEDDINGS",
-    title: "Destination Weddings",
-    couple: "Luke & Anna",
-    location: "Global Destination Vows",
-    description: "Breathtaking destination films set against majestic mountains and oceans, capturing intimate promises and multi-day celebrations.",
-    img: "assets/images/blog_dance.png",
-    vimeoId: "1027095536"
-  },
-  {
-    id: 3,
-    stepNum: "03 / 04",
-    category: "PRE WEDDING SESSION",
-    title: "Pre Wedding Session",
-    couple: "Niko & Bryn",
-    location: "Cinematic Pre-Wedding Stories",
-    description: "Golden hour romance sessions weaving personal letters, candid laughter, and dramatic landscapes into an unforgettable prelude.",
-    img: "assets/images/blog_fence.png",
-    vimeoId: "891737638"
-  },
-  {
-    id: 4,
-    stepNum: "04 / 04",
-    category: "ENGAGEMENT COVERAGE",
-    title: "Engagement Coverage",
-    couple: "Jeremy & Lauren",
-    location: "Special Celebration Session",
-    description: "Documenting proposals, engagement galas, and life milestones with timeless luxury and storytelling depth.",
-    img: "assets/images/blog_car.png",
-    vimeoId: "766281509"
-  }
-];
+// 3 FEATURED PORTFOLIO CATEGORIES (WEDDING, PRE WEDDING, ENGAGEMENT) IMPORTED FROM SHARED DATA
+import { usePortfolioCategories } from '../data/portfolioStore';
 
 function FeaturedStoriesStepSection({ onNavigate, onOpenVideo }) {
+  const { categories: storiesData } = usePortfolioCategories();
   const sectionRef = useRef(null);
   const [activeIdx, setActiveIdx] = useState(0);
-  const [isPlayingInline, setIsPlayingInline] = useState(false);
+  const [photoIdx, setPhotoIdx] = useState(0);
   const activeIdxRef = useRef(0);
   const isCooldownRef = useRef(false);
   const touchStartRef = useRef(null);
+  const verticalTouchStartRef = useRef(null);
 
   activeIdxRef.current = activeIdx;
 
-  // Reset inline video playback when changing active story
+  // Reset photo index when active category changes
   useEffect(() => {
-    setIsPlayingInline(false);
+    setPhotoIdx(0);
   }, [activeIdx]);
+
+  // Auto-advance vertical photo slideshow every 3.5 seconds
+  useEffect(() => {
+    if (!storiesData || storiesData.length === 0) return;
+    const currentStory = storiesData[activeIdx] || storiesData[0];
+    const currentPhotos = currentStory?.photos || [];
+    if (!currentPhotos || currentPhotos.length <= 1) return;
+    const interval = setInterval(() => {
+      setPhotoIdx((prev) => (prev + 1) % currentPhotos.length);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, [activeIdx, storiesData]);
+
   // Intercept wheel & scroll events ONLY on Desktop view (window.innerWidth > 768)
   useEffect(() => {
     const isMobile = window.innerWidth <= 768;
-    if (isMobile) return; // Disable scroll/wheel locking animation on mobile phone view
+    if (isMobile) return;
 
     const section = sectionRef.current;
     if (!section) return;
 
     let lastScrollY = window.scrollY;
 
-    // Detect scroll direction to automatically select story 04/04 when scrolling up into section
     const handleScrollDirection = () => {
       const currentScrollY = window.scrollY;
       const rect = section.getBoundingClientRect();
 
-      // If user is scrolling UP from lower sections into this section:
       if (currentScrollY < lastScrollY && rect.top < window.innerHeight * 0.5 && rect.bottom > 0) {
         if (rect.top <= 10 && rect.top >= -100 && activeIdxRef.current === 0) {
           setActiveIdx(storiesData.length - 1);
@@ -161,16 +135,14 @@ function FeaturedStoriesStepSection({ onNavigate, onOpenVideo }) {
       const current = activeIdxRef.current;
       const isPinnedAtTop = Math.abs(rect.top) <= 70;
 
-      // 1. DOWNWARD SCROLL: Step through 01 -> 02 -> 03 -> 04
+      // 1. DOWNWARD SCROLL: Step through 01 -> 02 -> 03
       if (delta > 0) {
-        // Snap section to top if entering from above
         if (rect.top > 0 && rect.top <= window.innerHeight * 0.45 && current < storiesData.length - 1) {
           e.preventDefault();
           window.scrollTo({ top: window.scrollY + rect.top, behavior: 'smooth' });
           return;
         }
 
-        // Lock scroll and step forward until last photo (04/04) is reached
         if (isPinnedAtTop && current < storiesData.length - 1) {
           e.preventDefault();
           if (isCooldownRef.current) return;
@@ -178,17 +150,15 @@ function FeaturedStoriesStepSection({ onNavigate, onOpenVideo }) {
           setActiveIdx(current + 1);
           setTimeout(() => { isCooldownRef.current = false; }, 520);
         }
-      } 
-      // 2. UPWARD SCROLL: Step back 04 -> 03 -> 02 -> 01
+      }
+      // 2. UPWARD SCROLL: Step back 03 -> 02 -> 01
       else if (delta < 0) {
-        // Snap section to top if entering from below
         if (rect.top < 0 && rect.bottom >= window.innerHeight * 0.5 && current > 0) {
           e.preventDefault();
           window.scrollTo({ top: window.scrollY + rect.top, behavior: 'smooth' });
           return;
         }
 
-        // Lock scroll and step backward until first photo (01/04) is reached
         if (isPinnedAtTop && current > 0) {
           e.preventDefault();
           if (isCooldownRef.current) return;
@@ -206,7 +176,7 @@ function FeaturedStoriesStepSection({ onNavigate, onOpenVideo }) {
     };
   }, []);
 
-  // Horizontal Touch Swipe Handlers for Mobile & Tablet
+  // Horizontal Touch Swipe Handlers for Mobile to switch categories
   const handleTouchStart = (e) => {
     if (e.touches.length !== 1) return;
     touchStartRef.current = {
@@ -227,8 +197,6 @@ function FeaturedStoriesStepSection({ onNavigate, onOpenVideo }) {
 
     if (isCooldownRef.current) return;
 
-    // ONLY trigger on horizontal swipe gestures (Math.abs(dx) > Math.abs(dy))
-    // Leaves normal vertical page scrolling uninhibited on mobile screens!
     if (Math.abs(dx) > 30 && Math.abs(dx) > Math.abs(dy) && dt < 600) {
       if (dx < -30 && current < storiesData.length - 1) {
         isCooldownRef.current = true;
@@ -242,26 +210,48 @@ function FeaturedStoriesStepSection({ onNavigate, onOpenVideo }) {
     }
   };
 
+  // Vertical Touch Swipe for inside the vertical photo frame
+  const handleVerticalTouchStart = (e) => {
+    if (e.touches.length === 1) {
+      verticalTouchStartRef.current = e.touches[0].clientY;
+    }
+  };
+
+  const handleVerticalTouchEnd = (e) => {
+    if (verticalTouchStartRef.current !== null && e.changedTouches.length === 1) {
+      const diffY = verticalTouchStartRef.current - e.changedTouches[0].clientY;
+      const len = activeStory.photos.length;
+      if (diffY > 40) {
+        // Swipe up -> next vertical photo
+        setPhotoIdx((prev) => (prev + 1) % len);
+      } else if (diffY < -40) {
+        // Swipe down -> previous vertical photo
+        setPhotoIdx((prev) => (prev - 1 + len) % len);
+      }
+      verticalTouchStartRef.current = null;
+    }
+  };
+
   const handleNext = () => {
     if (activeIdx < storiesData.length - 1) {
-      setActiveIdx(prev => prev + 1);
+      setActiveIdx((prev) => prev + 1);
     }
   };
 
   const handlePrev = () => {
     if (activeIdx > 0) {
-      setActiveIdx(prev => prev - 1);
+      setActiveIdx((prev) => prev - 1);
     }
   };
 
-  const activeStory = storiesData[activeIdx];
+  const safeIdx = Math.min(activeIdx, Math.max(0, (storiesData?.length || 1) - 1));
+  const activeStory = storiesData?.[safeIdx] || storiesData?.[0];
 
-  // 3D tilt hover for active frame
   const handleMouseMove = (e) => {
     const card = e.currentTarget;
     const rect = card.getBoundingClientRect();
-    const rx = ((e.clientY - rect.top) / rect.height - 0.5) * -6;
-    const ry = ((e.clientX - rect.left) / rect.width - 0.5) * 6;
+    const rx = ((e.clientY - rect.top) / rect.height - 0.5) * -5;
+    const ry = ((e.clientX - rect.left) / rect.width - 0.5) * 5;
     card.style.transform = `rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg)`;
   };
 
@@ -270,182 +260,138 @@ function FeaturedStoriesStepSection({ onNavigate, onOpenVideo }) {
   };
 
   return (
-    <section 
-      ref={sectionRef} 
+    <section
+      ref={sectionRef}
       className="featured-stories-sec"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      <div className="featured-stories-sticky-frame">
-        
-        {/* LEFT COLUMN: STORY DETAILS & CATEGORY NAVIGATION TABS */}
-        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
-          
-          {/* Category Navigation Pills */}
-          <div 
-            className="coverage-tabs-bar" 
-            style={{ 
-              display: 'flex', 
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              gap: '0.4rem', 
-              width: '100%',
-              maxWidth: '100%',
-              boxSizing: 'border-box',
-              marginBottom: '1.2rem',
-              paddingBottom: '0.2rem'
-            }}
-          >
-            {storiesData.map((s, idx) => {
-              return (
-                <button
-                  key={s.id}
-                  onClick={() => setActiveIdx(idx)}
-                  style={{
-                    padding: '0.35rem 0.75rem',
-                    fontSize: '0.62rem',
-                    fontFamily: 'var(--sans)',
-                    fontWeight: 600,
-                    letterSpacing: '0.08em',
-                    textTransform: 'uppercase',
-                    whiteSpace: 'nowrap',
-                    flexShrink: 0,
-                    borderRadius: '99px',
-                    border: idx === activeIdx ? '1px solid var(--brass)' : '1px solid rgba(234,229,219,0.18)',
-                    background: idx === activeIdx ? 'var(--brass)' : 'rgba(234,229,219,0.05)',
-                    color: idx === activeIdx ? '#131312' : '#eae5db',
-                    cursor: 'pointer',
-                    transition: 'all 0.35s ease'
-                  }}
-                  aria-label={`Navigate to ${s.category}`}
-                >
-                  {s.category}
-                </button>
-              );
-            })}
-          </div>
+      <div className="featured-stories-card-container">
 
-          {/* Step Counter, Progress Bar & Arrow Controls */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.8rem', marginBottom: '1.2rem', width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
-            <span style={{ fontFamily: 'var(--serif)', fontStyle: 'italic', fontSize: '1.15rem', color: 'var(--brass)', lineHeight: 1, flexShrink: 0 }}>
-              {activeStory.stepNum}
-            </span>
+        {/* Creative Box Heading: 01 - Portfolio */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="sec-head creative-box-head"
+        >
+          <span className="n">01</span>
+          <span className="sec-head-sep" aria-hidden="true">—</span>
+          <span className="label">Portfolio</span>
+        </motion.div>
 
-            <div style={{ flex: 1, minWidth: '20px', height: '2px', background: 'var(--hair)', overflow: 'hidden' }}>
-              <div style={{ width: `${((activeIdx + 1) / storiesData.length) * 100}%`, height: '100%', background: 'var(--brass)', transition: 'width 0.45s ease' }} />
-            </div>
-
-            {/* Prev / Next Slide Arrow Buttons */}
-            <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexShrink: 0 }}>
-              <button
-                onClick={handlePrev}
-                disabled={activeIdx === 0}
-                style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '50%',
-                  border: '1px solid rgba(234,229,219,0.25)',
-                  background: activeIdx > 0 ? 'rgba(234,229,219,0.08)' : 'transparent',
-                  color: activeIdx > 0 ? '#eae5db' : 'rgba(234,229,219,0.25)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: activeIdx > 0 ? 'pointer' : 'default',
-                  transition: 'all 0.33s ease'
-                }}
-                aria-label="Previous Slide"
-              >
-                ‹
-              </button>
-              <button
-                onClick={handleNext}
-                disabled={activeIdx === storiesData.length - 1}
-                style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '50%',
-                  border: '1px solid rgba(234,229,219,0.25)',
-                  background: activeIdx < storiesData.length - 1 ? 'rgba(234,229,219,0.08)' : 'transparent',
-                  color: activeIdx < storiesData.length - 1 ? '#eae5db' : 'rgba(234,229,219,0.25)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: activeIdx < storiesData.length - 1 ? 'pointer' : 'default',
-                  transition: 'all 0.33s ease'
-                }}
-                aria-label="Next Slide"
-              >
-                ›
-              </button>
-            </div>
-          </div>
-
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeStory.id}
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -14 }}
-              transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-              style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}
+        {/* 1. THREE COLUMNS / TABS: WEDDING | PRE WEDDING | ENGAGEMENT */}
+        <div className="category-tabs-row" role="tablist" aria-label="Portfolio Category Tabs">
+          {storiesData.map((s, idx) => (
+            <button
+              key={s.id}
+              role="tab"
+              aria-selected={idx === activeIdx}
+              onClick={() => setActiveIdx(idx)}
+              className={`category-tab-btn ${idx === activeIdx ? 'active' : ''}`}
             >
-              {/* Main Story Title */}
-              <h2 style={{ fontFamily: 'var(--serif)', fontSize: 'clamp(2rem, 4vw, 3.5rem)', lineHeight: 1.1, color: '#eae5db', marginBottom: '1rem', wordBreak: 'break-word', fontWeight: 400 }}>
-                {activeStory.title}
-              </h2>
+              {s.category}
+            </button>
+          ))}
+        </div>
 
-              {/* Couple Names & Location */}
-              <div style={{ fontFamily: 'var(--sans)', fontSize: '0.8rem', fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--brass)', marginBottom: '1.2rem', wordBreak: 'break-word' }}>
-                {activeStory.couple} <span className="tick">·</span> {activeStory.location}
-              </div>
+        {/* 2. PROGRESS BAR & 01 / 03 COUNTER */}
+        <div className="category-counter-row">
+          <span className="category-counter-num">{activeStory.stepNum}</span>
 
-              {/* Description Narrative */}
-              <p style={{ fontSize: '0.92rem', lineHeight: 1.65, color: 'var(--bone-70)', marginBottom: '1.8rem', maxWidth: '46ch' }}>
-                {activeStory.description}
-              </p>
+          <div className="category-progress-track">
+            <div
+              className="category-progress-bar"
+              style={{ width: `${((activeIdx + 1) / storiesData.length) * 100}%` }}
+            />
+          </div>
 
-              {/* Action Buttons */}
-              <div style={{ display: 'flex', gap: '1.2rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                <button className="btn" onClick={() => onNavigate('portfolio')}>
-                  <span>View Portfolio</span>
-                </button>
-              </div>
-            </motion.div>
+          <div className="category-arrow-btns">
+            <button
+              onClick={handlePrev}
+              disabled={activeIdx === 0}
+              className="category-arrow-btn"
+              aria-label="Previous Category"
+            >
+              ‹
+            </button>
+            <button
+              onClick={handleNext}
+              disabled={activeIdx === storiesData.length - 1}
+              className="category-arrow-btn"
+              aria-label="Next Category"
+            >
+              ›
+            </button>
+          </div>
+        </div>
+
+        {/* 3. CLEAN SECTION TITLE (NO DESCRIPTION PARAGRAPH) */}
+        <div className="category-title-wrap">
+          <AnimatePresence mode="wait">
+            <motion.h2
+              key={activeStory.id}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.25 }}
+              className="category-main-title"
+            >
+              {activeStory.title}
+            </motion.h2>
           </AnimatePresence>
         </div>
 
-        {/* RIGHT COLUMN: SMOOTH SCALING & FADE CARD TRANSITION WITH PORTFOLIO IMAGES */}
-        <div>
+        {/* 4. VERTICAL PHOTO SLIDESHOW CONNECTED TO GALLERY */}
+        <div
+          className="vertical-slideshow-frame"
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
+          onTouchStart={handleVerticalTouchStart}
+          onTouchEnd={handleVerticalTouchEnd}
+          onClick={() => onNavigate('portfolio')}
+          role="button"
+          tabIndex="0"
+          aria-label={`Open ${activeStory.title} Gallery in Portfolio`}
+        >
           <AnimatePresence mode="wait">
             <motion.div
-              key={activeStory.id}
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: -10 }}
-              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-              className="veil in"
+              key={`${activeStory.id}-${photoIdx}`}
+              initial={{ opacity: 0, y: 25, scale: 1.04 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -25, scale: 0.98 }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              className="vertical-slide-img-wrap"
             >
-              <div 
-                className="feature-frame"
-                onMouseMove={handleMouseMove}
-                onMouseLeave={handleMouseLeave}
-                onClick={() => onNavigate('portfolio')}
-                role="button"
-                tabIndex="0"
-                style={{ cursor: 'pointer', borderRadius: '6px', overflow: 'hidden', width: '100%', boxSizing: 'border-box', aspectRatio: '16 / 10', position: 'relative' }}
-              >
-                <img src={activeStory.img} alt={activeStory.title} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '6px', display: 'block' }} />
-                
-                {/* Camera Focus Brackets */}
-                <span className="brk tl" aria-hidden="true"></span>
-                <span className="brk tr" aria-hidden="true"></span>
-                <span className="brk bl" aria-hidden="true"></span>
-                <span className="brk br" aria-hidden="true"></span>
-                
-                <div className="shade"></div>
-              </div>
+              <img
+                src={activeStory.photos[photoIdx]}
+                alt={`${activeStory.title} photo ${photoIdx + 1}`}
+                className="vertical-slide-img"
+              />
             </motion.div>
           </AnimatePresence>
+
+          {/* Camera Focus Brackets */}
+          <span className="brk tl" aria-hidden="true"></span>
+          <span className="brk tr" aria-hidden="true"></span>
+          <span className="brk bl" aria-hidden="true"></span>
+          <span className="brk br" aria-hidden="true"></span>
+
+          {/* Vertical Slide Indicators */}
+          <div className="vertical-slide-dots" aria-hidden="true">
+            {activeStory.photos.map((_, pIdx) => (
+              <button
+                key={pIdx}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setPhotoIdx(pIdx);
+                }}
+                className={`vertical-slide-dot ${pIdx === photoIdx ? 'active' : ''}`}
+                aria-label={`Go to photo ${pIdx + 1}`}
+              />
+            ))}
+          </div>
         </div>
 
       </div>
@@ -454,29 +400,104 @@ function FeaturedStoriesStepSection({ onNavigate, onOpenVideo }) {
 }
 
 export default function Home({ onNavigate }) {
+  const heroVideoRef = useRef(null);
+  const [isPhoneView, setIsPhoneView] = useState(() => {
+    if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+      return window.matchMedia('(max-width: 768px)').matches;
+    }
+    return false;
+  });
   const [activeSlide, setActiveSlide] = useState(0);
   const [progressWidth, setProgressWidth] = useState(0);
   const [activeVideo, setActiveVideo] = useState(null);
   const [lightboxLit, setLightboxLit] = useState(false);
 
-  // Vimeo Lightbox handlers
+  // Track responsive viewport breakpoint (<= 768px = Phone View -> Reel.mp4, > 768px = Desktop View -> Wide.mp4)
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return;
+    const mql = window.matchMedia('(max-width: 768px)');
+    const handleMediaChange = (e) => setIsPhoneView(e.matches);
+
+    setIsPhoneView(mql.matches);
+    if (mql.addEventListener) {
+      mql.addEventListener('change', handleMediaChange);
+      return () => mql.removeEventListener('change', handleMediaChange);
+    }
+    mql.addListener(handleMediaChange);
+    return () => mql.removeListener(handleMediaChange);
+  }, []);
+
+  // Guarantee hero video autoplay on all browsers (including Brave & mobile) and across viewport switches
+  useEffect(() => {
+    if (heroVideoRef.current) {
+      heroVideoRef.current.defaultMuted = true;
+      heroVideoRef.current.muted = true;
+      const playPromise = heroVideoRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((err) => {
+          console.warn("Hero video autoplay fallback:", err);
+        });
+      }
+    }
+  }, [isPhoneView]);
+
+  // Package tier toggle state (default: 'signature' for Traditional Wedding)
+  const [pkg1Tier, setPkg1Tier] = useState('signature');
+  const [pkg2Tier, setPkg2Tier] = useState('signature');
+  const [pkg3Tier, setPkg3Tier] = useState('signature');
+
+  // Vimeo Lightbox handlers with browser history swipe-back support
   const openVideoModal = (vimeoId) => {
     setActiveVideo(vimeoId);
     setLightboxLit(true);
     document.body.style.overflow = 'hidden';
+    window.history.pushState(
+      { page: 'home', modal: 'video', vimeoId },
+      '',
+      window.location.pathname + '#video'
+    );
   };
 
   const closeVideoModal = () => {
     setActiveVideo(null);
     setLightboxLit(false);
     document.body.style.overflow = '';
+    if (window.location.hash === '#video') {
+      window.history.back();
+    }
   };
+
+  // Close video modal on browser back / swipe back or Escape key
+  useEffect(() => {
+    const handleVideoPop = () => {
+      if (window.location.hash !== '#video' && activeVideo) {
+        setActiveVideo(null);
+        setLightboxLit(false);
+        document.body.style.overflow = '';
+      }
+    };
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && activeVideo) {
+        closeVideoModal();
+      }
+    };
+
+    window.addEventListener('popstate', handleVideoPop);
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('popstate', handleVideoPop);
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = '';
+    };
+  }, [activeVideo]);
 
   // Auto-slide effect for Testimonials
   useEffect(() => {
     setProgressWidth(0);
     const intervalTime = 6000;
-    
+
     let startTime = Date.now();
     const progressInterval = setInterval(() => {
       const elapsed = Date.now() - startTime;
@@ -533,35 +554,39 @@ export default function Home({ onNavigate }) {
 
   return (
     <div className="page-content-wrapper">
-      {/* Film Grain Overlay */}
-      <div className="grain" aria-hidden="true"></div>
-
       {/* 1. HERO SECTION */}
       <div className="hero-wrap">
         <header className="hero">
           <div className="media" style={{ overflow: 'hidden', position: 'absolute', inset: 0, background: '#0a0a0b' }}>
             <motion.div
-              initial={{ scale: 1.28, opacity: 0.5 }}
-              animate={{ scale: 1.08, opacity: 0.9 }}
-              transition={{ duration: 3.2, ease: [0.22, 1, 0.36, 1] }}
+              initial={{ scale: 1.08, opacity: 0.92 }}
+              animate={{ scale: 1.02, opacity: 1 }}
+              transition={{ duration: 2.2, ease: [0.22, 1, 0.36, 1] }}
               style={{ width: '100%', height: '100%', position: 'absolute', inset: 0, overflow: 'hidden' }}
             >
-              <iframe 
-                src="https://player.vimeo.com/video/332887606?autoplay=1&loop=1&title=0&byline=0&portrait=0&muted=1&background=1"
-                allow="autoplay; fullscreen; picture-in-picture"
-                allowFullScreen
-                className="hero-vimeo-iframe"
+              <video
+                ref={heroVideoRef}
+                key={isPhoneView ? 'reel-a9b2633' : 'wide'}
+                src={isPhoneView ? '/Reel.mp4?v=a9b2633' : '/Wide.mp4'}
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="auto"
+                className="hero-background-video"
                 style={{
                   position: 'absolute',
                   top: '50%',
                   left: '50%',
-                  height: 'max(170vh, 200vw)',
-                  width: 'calc(max(170vh, 200vw) * 1.7778)',
+                  width: '100%',
+                  height: '100%',
+                  minWidth: '100%',
+                  minHeight: '100%',
                   transform: 'translate(-50%, -50%)',
+                  objectFit: 'cover',
                   pointerEvents: 'none',
                   border: 'none'
                 }}
-                title="Hero Wedding Video Background"
               />
             </motion.div>
           </div>
@@ -576,17 +601,17 @@ export default function Home({ onNavigate }) {
               EST. PURI, ODISHA
             </motion.span>
 
-            <motion.h1 
+            <motion.h1
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.1, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
               className="display"
             >
-              Memories that feel<br />like <em>the moments felt.</em>
+              Memories that feel <br />like <em>the moments felt.</em>
             </motion.h1>
           </div>
 
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
@@ -608,7 +633,7 @@ export default function Home({ onNavigate }) {
 
       {/* 3. SECTION 02: KIND WORDS (SLIDER) */}
       <section className="sec on-bone">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -619,7 +644,7 @@ export default function Home({ onNavigate }) {
           <span className="label">Kind Words</span>
         </motion.div>
 
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, scale: 0.96 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
@@ -628,11 +653,23 @@ export default function Home({ onNavigate }) {
           onTouchStart={handleKwTouchStart}
           onTouchEnd={handleKwTouchEnd}
         >
+          <button className="kw-arrow kw-prev" onClick={handlePrev} aria-label="Previous testimonial">
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 1L1 6l5 5M1 6h15" stroke="#131312" strokeWidth="1.2" />
+            </svg>
+          </button>
+
           <div className="kw-track">
             {slides.map((slide, index) => (
               <div key={index} className={`kw-slide ${index === activeSlide ? 'is-active' : ''}`}>
                 <div className="kw-photo">
-                  <img src={slide.img} alt={`${slide.author} portrait`} width="1280" height="1600" />
+                  <img
+                    src={slide.img}
+                    alt={`${slide.author} portrait`}
+                    width="1280"
+                    height="1600"
+                    style={slide.objectPosition ? { objectPosition: slide.objectPosition } : undefined}
+                  />
                 </div>
                 <div className="kw-text">
                   <blockquote>{slide.quote}</blockquote>
@@ -642,6 +679,12 @@ export default function Home({ onNavigate }) {
               </div>
             ))}
           </div>
+
+          <button className="kw-arrow kw-next" onClick={handleNext} aria-label="Next testimonial">
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10 1l5 5-5 5M15 6H0" stroke="#131312" strokeWidth="1.2" />
+            </svg>
+          </button>
         </motion.div>
 
         <div className="kw-foot">
@@ -650,28 +693,16 @@ export default function Home({ onNavigate }) {
           </span>
 
           <div className="kw-controls">
-            <button className="kw-arrow kw-prev" onClick={handlePrev} aria-label="Previous testimonial">
-              <svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M6 1L1 6l5 5M1 6h15" stroke="#131312" strokeWidth="1.2" />
-              </svg>
-            </button>
-
             <div className="kw-dots">
               {slides.map((_, index) => (
-                <button 
-                  key={index} 
-                  className={`kw-dot ${index === activeSlide ? 'is-active' : ''}`} 
+                <button
+                  key={index}
+                  className={`kw-dot ${index === activeSlide ? 'is-active' : ''}`}
                   onClick={() => setActiveSlide(index)}
                   aria-label={`Testimonial ${index + 1}`}
                 ></button>
               ))}
             </div>
-
-            <button className="kw-arrow kw-next" onClick={handleNext} aria-label="Next testimonial">
-              <svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M10 1l5 5-5 5M15 6H0" stroke="#131312" strokeWidth="1.2" />
-              </svg>
-            </button>
           </div>
         </div>
       </section>
@@ -680,12 +711,12 @@ export default function Home({ onNavigate }) {
       <section className="sec stats-sec">
         <div className="stats">
           <motion.div initial={{ opacity: 0, y: 35 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="stat">
-            <span className="num"><AnimatedNumber end={200} /><sup>+</sup></span>
-            <span className="label">Love Stories Told</span>
+            <span className="num"><AnimatedNumber end={100} /><span className="stat-plus">+</span></span>
+            <span className="label">Love Stories</span>
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 35 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.12 }} className="stat">
-            <span className="num"><AnimatedNumber end={10} /><sup>yrs</sup></span>
+            <span className="num"><AnimatedNumber end={7} /><sup>yrs</sup></span>
             <span className="label">Masterful Storytellers</span>
           </motion.div>
 
@@ -693,23 +724,16 @@ export default function Home({ onNavigate }) {
             <span className="num"><AnimatedNumber end={5.0} decimals={1} /><sup>★</sup></span>
             <span className="label">Luxury Ratings</span>
           </motion.div>
-
-          <motion.div initial={{ opacity: 0, y: 35 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.36 }} className="stat stat-brand">
-            <div className="mark">
-              <span className="mark-main">CHITRA</span>
-              <small className="mark-sub">WEDDINGS</small>
-            </div>
-          </motion.div>
         </div>
       </section>
 
       {/* 4. SECTION 04: SERVICES & PACKAGES */}
       <section className="sec on-bone packages-sec" id="services-packages">
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }} 
-          whileInView={{ opacity: 1, y: 0 }} 
-          viewport={{ once: true }} 
-          transition={{ duration: 0.7 }} 
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
           className="sec-head"
         >
           <span className="n">04</span>
@@ -718,21 +742,21 @@ export default function Home({ onNavigate }) {
 
         {/* Section Intro Headline & Description */}
         <div className="packages-intro">
-          <motion.h2 
-            initial={{ opacity: 0, y: 30 }} 
-            whileInView={{ opacity: 1, y: 0 }} 
-            viewport={{ once: true }} 
-            transition={{ duration: 0.8 }} 
+          <motion.h2
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
             className="display packages-title"
           >
             Curated Collections for <em>Your Sacred Day.</em>
           </motion.h2>
 
-          <motion.p 
-            initial={{ opacity: 0, y: 30 }} 
-            whileInView={{ opacity: 1, y: 0 }} 
-            viewport={{ once: true }} 
-            transition={{ duration: 0.8, delay: 0.1 }} 
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.1 }}
             className="body-lg packages-desc"
           >
             We offer bespoke wedding photography and cinematography packages designed to capture every unscripted emotion, traditional ceremony, and grand celebration with timeless elegance.
@@ -742,104 +766,262 @@ export default function Home({ onNavigate }) {
         {/* Package Cards Grid */}
         <div className="packages-grid">
           {/* Card 1: Traditional & Ceremony */}
-          <motion.div 
-            initial={{ opacity: 0, y: 40 }} 
-            whileInView={{ opacity: 1, y: 0 }} 
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
             whileHover={{ y: -8 }}
-            viewport={{ once: true }} 
-            transition={{ duration: 0.6 }} 
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
             className="pkg-card"
           >
-            <div className="pkg-badge">Most Popular</div>
             <span className="pkg-num">01</span>
-            <h3 className="pkg-name">Traditional Wedding Collection</h3>
+            <h3 className="pkg-name">Traditional Wedding</h3>
             <p className="pkg-tag">Complete Multi-Day Ritual &amp; Ceremony Coverage</p>
 
-            <ul className="pkg-features">
-              <li>Full-day photography &amp; 4K cinematography</li>
-              <li>Traditional ritual coverage &amp; candid portraiture</li>
-              <li>Cinematic feature film + teaser trailer</li>
-              <li>High-resolution edited digital gallery</li>
-              <li><strong style={{ color: 'var(--brass-dark)' }}>Bonus:</strong> Free Engagement Session Included</li>
-            </ul>
+            {/* Essential / Signature Toggle */}
+            <div className="pkg-toggle-bar">
+              <button
+                type="button"
+                className={`pkg-toggle-btn ${pkg1Tier === 'essential' ? 'is-active' : ''}`}
+                onClick={() => setPkg1Tier('essential')}
+              >
+                ESSENTIAL
+              </button>
+              <button
+                type="button"
+                className={`pkg-toggle-btn ${pkg1Tier === 'signature' ? 'is-active' : ''}`}
+                onClick={() => setPkg1Tier('signature')}
+              >
+                SIGNATURE
+              </button>
+            </div>
+
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={pkg1Tier}
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.2 }}
+                style={{ flexGrow: 1 }}
+              >
+                <ul className="pkg-features">
+                  {pkg1Tier === 'signature' ? (
+                    <>
+                      <li>Full cinematic coverage with candid and aerial coverage for all events (5 days of coverage).</li>
+                      <li>Story-driven shoot for wedding film.</li>
+                      <li>10+ minute wedding film.</li>
+                      <li>Full wedding documentary film with teaser.</li>
+                      <li>Acrylic cover album with box and bag.</li>
+                      <li>Same-day reels (for limited events).</li>
+                      <li>All photo sharing — immediate photo sharing during the event.</li>
+                      <li>All raw data provided through hard disk.</li>
+                      <li>Optional engagement add-ons available.</li>
+                    </>
+                  ) : (
+                    <>
+                      <li>Full cinematic coverage with limited candid and aerial coverage (5 days of coverage).</li>
+                      <li>Full documentary film.</li>
+                      <li>Hardcover album with a leather bag.</li>
+                      <li>All photos shared through the cloud.</li>
+                      <li>2 reels from events.</li>
+                      <li>Optional engagement coverage add-on available.</li>
+                    </>
+                  )}
+                </ul>
+              </motion.div>
+            </AnimatePresence>
 
             <div className="pkg-foot">
-              <button className="pkg-btn" onClick={() => onNavigate('contact')}>
-                <span>Enquire Package</span>
+              <div className="pkg-price-tag">
+                {pkg1Tier === 'signature' ? '₹2,40,000' : '₹1,80,000'}
+              </div>
+              <button 
+                type="button" 
+                className="pkg-book-btn" 
+                onClick={() => onNavigate('contact')}
+                aria-label="Book Traditional Wedding"
+              >
+                <span>Book Now</span>
+                <span aria-hidden="true">→</span>
               </button>
             </div>
           </motion.div>
 
           {/* Card 2: Destination Wedding */}
-          <motion.div 
-            initial={{ opacity: 0, y: 40 }} 
-            whileInView={{ opacity: 1, y: 0 }} 
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
             whileHover={{ y: -8 }}
-            viewport={{ once: true }} 
-            transition={{ duration: 0.6, delay: 0.15 }} 
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.15 }}
             className="pkg-card pkg-card--featured"
           >
-            <div className="pkg-badge pkg-badge--gold">Signature</div>
             <span className="pkg-num">02</span>
-            <h3 className="pkg-name">Destination Storytelling</h3>
-            <p className="pkg-tag">Worldwide Travel &amp; Multi-Event Celebrations</p>
+            <h3 className="pkg-name">Destination Wedding</h3>
+            <p className="pkg-tag">Destination Travel &amp; Multi-Event Celebrations</p>
 
-            <ul className="pkg-features">
-              <li>Multi-day destination coverage anywhere worldwide</li>
-              <li>Aerial 4K drone cinematography &amp; dual team shooters</li>
-              <li>Extended documentary film + social highlight reel</li>
-              <li>Handcrafted luxury leather keepsake heirloom album</li>
-              <li>Pre-wedding portrait session at destination location</li>
-            </ul>
+            {/* Essential / Signature Toggle */}
+            <div className="pkg-toggle-bar">
+              <button
+                type="button"
+                className={`pkg-toggle-btn ${pkg2Tier === 'essential' ? 'is-active' : ''}`}
+                onClick={() => setPkg2Tier('essential')}
+              >
+                ESSENTIAL
+              </button>
+              <button
+                type="button"
+                className={`pkg-toggle-btn ${pkg2Tier === 'signature' ? 'is-active' : ''}`}
+                onClick={() => setPkg2Tier('signature')}
+              >
+                SIGNATURE
+              </button>
+            </div>
+
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={pkg2Tier}
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.2 }}
+                style={{ flexGrow: 1 }}
+              >
+                <ul className="pkg-features">
+                  {pkg2Tier === 'signature' ? (
+                    <>
+                      <li>Full cinematic coverage with candid and aerial coverage for all events (2 days' coverage).</li>
+                      <li>15+ minute wedding film.</li>
+                      <li>Story-driven shoot for wedding films.</li>
+                      <li>Full wedding documentary film with teaser.</li>
+                      <li>Acrylic cover album with acrylic box and leather bag.</li>
+                      <li>All photo sharing for all events.</li>
+                      <li>All raw data provided through hard disk.</li>
+                      <li>4 reels from events (including same-day reels).</li>
+                    </>
+                  ) : (
+                    <>
+                      <li>Full cinematic coverage with candid and aerial coverage for all events (2 days' coverage).</li>
+                      <li>15+ minute wedding film.</li>
+                      <li>Story-driven shoot for wedding film.</li>
+                      <li>Full wedding documentary film.</li>
+                      <li>Acrylic cover album with box and leather bag (20 sheets).</li>
+                      <li>All photos delivered through the cloud.</li>
+                      <li>Optional engagement coverage: 2 reels from events.</li>
+                    </>
+                  )}
+                </ul>
+              </motion.div>
+            </AnimatePresence>
 
             <div className="pkg-foot">
-              <button className="pkg-btn pkg-btn--gold" onClick={() => onNavigate('contact')}>
-                <span>Enquire Package</span>
+              <div className="pkg-price-tag">
+                {pkg2Tier === 'signature' ? '₹2,80,000' : '₹2,00,000'}
+              </div>
+              <button 
+                type="button" 
+                className="pkg-book-btn" 
+                onClick={() => onNavigate('contact')}
+                aria-label="Book Destination Wedding"
+              >
+                <span>Book Now</span>
+                <span aria-hidden="true">→</span>
               </button>
             </div>
           </motion.div>
 
           {/* Card 3: Pre-Wedding & Engagement */}
-          <motion.div 
-            initial={{ opacity: 0, y: 40 }} 
-            whileInView={{ opacity: 1, y: 0 }} 
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
             whileHover={{ y: -8 }}
-            viewport={{ once: true }} 
-            transition={{ duration: 0.6, delay: 0.3 }} 
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.3 }}
             className="pkg-card"
           >
             <span className="pkg-num">03</span>
-            <h3 className="pkg-name">Pre-Wedding &amp; Intimate</h3>
+            <h3 className="pkg-name">Pre-Wedding &amp; Engagement</h3>
             <p className="pkg-tag">Editorial Couple Sessions &amp; Milestones</p>
 
-            <ul className="pkg-features">
-              <li>Half-day or full-day editorial concept shoot</li>
-              <li>Cinematic 4K romantic teaser film</li>
-              <li>Multiple outfit transitions &amp; scenic locations</li>
-              <li>Color-graded fine art digital image collection</li>
-              <li>Customized digital invite video teaser</li>
-            </ul>
+            {/* Essential / Signature Toggle */}
+            <div className="pkg-toggle-bar">
+              <button
+                type="button"
+                className={`pkg-toggle-btn ${pkg3Tier === 'essential' ? 'is-active' : ''}`}
+                onClick={() => setPkg3Tier('essential')}
+              >
+                ESSENTIAL
+              </button>
+              <button
+                type="button"
+                className={`pkg-toggle-btn ${pkg3Tier === 'signature' ? 'is-active' : ''}`}
+                onClick={() => setPkg3Tier('signature')}
+              >
+                SIGNATURE
+              </button>
+            </div>
+
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={pkg3Tier}
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.2 }}
+                style={{ flexGrow: 1 }}
+              >
+                <ul className="pkg-features">
+                  {pkg3Tier === 'signature' ? (
+                    <>
+                      <li>Cinematic videography and professional/editorial photography.</li>
+                      <li>Aerial coverage.</li>
+                      <li>Pre-wedding/engagement film.</li>
+                      <li>Wedding countdown post.</li>
+                      <li>2 reels.</li>
+                      <li>Up to 80 selective photos retouching.</li>
+                    </>
+                  ) : (
+                    <>
+                      <li>Cinematic videography with professional editorial photography.</li>
+                      <li>Pre-wedding/engagement film.</li>
+                      <li>Up to 10 selective photo retouches.</li>
+                      <li>One reel for social media.</li>
+                    </>
+                  )}
+                </ul>
+              </motion.div>
+            </AnimatePresence>
 
             <div className="pkg-foot">
-              <button className="pkg-btn" onClick={() => onNavigate('contact')}>
-                <span>Enquire Package</span>
+              <div className="pkg-price-tag">
+                {pkg3Tier === 'signature' ? '₹35,000' : '₹25,000'}
+              </div>
+              <button 
+                type="button" 
+                className="pkg-book-btn" 
+                onClick={() => onNavigate('contact')}
+                aria-label="Book Pre-Wedding & Engagement"
+              >
+                <span>Book Now</span>
+                <span aria-hidden="true">→</span>
               </button>
             </div>
           </motion.div>
         </div>
 
         {/* Brand Banner Message & Prominent CTA */}
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }} 
-          whileInView={{ opacity: 1, y: 0 }} 
-          viewport={{ once: true }} 
-          transition={{ duration: 0.8 }} 
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
           className="packages-banner"
         >
           <p className="packages-banner-msg">
-            "We create your dream wedding stories."
+            "Your love story deserves to be told beautifully."
           </p>
-          
+
           <button className="btn packages-cta-btn" onClick={() => onNavigate('contact')}>
             <span>LET'S START YOUR JOURNEY →</span>
           </button>
@@ -855,36 +1037,37 @@ export default function Home({ onNavigate }) {
 
         <div className="legacy-about-grid">
           {/* Left Column: Founder Professional Portrait Photo */}
-          <motion.div 
-            initial={{ opacity: 0, x: -30 }} 
-            whileInView={{ opacity: 1, x: 0 }} 
-            viewport={{ once: true }} 
-            transition={{ duration: 0.8 }} 
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
             className="legacy-about-photo-wrap"
           >
             <div className="legacy-about-photo">
-              <img 
-                src="assets/images/hero_meet_me.png" 
-                alt="Adarsh Tripathy - Founder & Lead Cinematographer" 
+              <img
+                src="/1794905891532.png"
+                alt="Adarsh Tripathy - Founder & Lead Photographer"
                 loading="lazy"
-                width="800"
-                height="1000"
+                decoding="async"
+                width="1792"
+                height="2400"
               />
             </div>
           </motion.div>
 
           {/* Right Column: Founder Welcome & Introduction Text */}
-          <motion.div 
-            initial={{ opacity: 0, x: 30 }} 
-            whileInView={{ opacity: 1, x: 0 }} 
-            viewport={{ once: true }} 
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.1 }}
             className="legacy-about-content"
           >
             <h2 className="display legacy-about-title">
               Hello, I'm <em>Adarsh Tripathy.</em>
             </h2>
-            
+
             <p className="body-lg legacy-about-lead">
               Welcome to Chitra Weddings. Over the past decade, my calling has been preserving the quiet glances, unscripted tears, and radiant celebrations that define your most sacred day.
             </p>
@@ -895,13 +1078,43 @@ export default function Home({ onNavigate }) {
 
             <div className="legacy-about-signature">
               <span className="sig-name">Adarsh Tripathy</span>
-              <span className="sig-title">Founder &amp; Lead Cinematographer</span>
+              <span className="sig-title">Founder &amp; Lead Photographer</span>
             </div>
 
-            <div className="legacy-about-action">
+            <div className="legacy-about-action" style={{ display: 'flex', alignItems: 'center', gap: '1.2rem', flexWrap: 'wrap' }}>
               <button className="btn btn--outline" onClick={() => onNavigate('about')}>
                 <span>Meet Adarsh</span>
               </button>
+            </div>
+
+            {/* Social Media Connectors */}
+            <div className="legacy-social-connectors" aria-label="Connect with Founder">
+              <span className="legacy-social-label">Connect:</span>
+              <div className="legacy-social-links">
+                <a href="https://www.instagram.com/the_direct_or" target="_blank" rel="noopener noreferrer" className="legacy-social-btn" aria-label="Instagram @the_direct_or" title="Instagram @the_direct_or">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                  </svg>
+                </a>
+                <a href="https://wa.me/918093844489" target="_blank" rel="noopener noreferrer" className="legacy-social-btn" aria-label="WhatsApp +91 8093844489" title="WhatsApp +91 8093844489">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+                  </svg>
+                </a>
+                <a href="https://youtube.com/@artofweddingbyadarsh?si=Squya-1JjyoMxHd2" target="_blank" rel="noopener noreferrer" className="legacy-social-btn" aria-label="YouTube @artofweddingbyadarsh" title="YouTube @artofweddingbyadarsh">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/>
+                    <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="currentColor"/>
+                  </svg>
+                </a>
+                <a href="https://www.facebook.com/share/1EtQF3LBcH" target="_blank" rel="noopener noreferrer" className="legacy-social-btn" aria-label="Facebook" title="Facebook — Adarsh Tripathy">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+                  </svg>
+                </a>
+              </div>
             </div>
           </motion.div>
         </div>
@@ -909,13 +1122,33 @@ export default function Home({ onNavigate }) {
 
       {/* 6. SECTION 05: THE TRAILER CTA */}
       <section className="home-trailer in-view" aria-label="Special Offer" style={{ position: 'relative', overflow: 'hidden' }}>
-        <motion.img initial={{ scale: 1.15 }} whileInView={{ scale: 1 }} viewport={{ once: true }} transition={{ duration: 1.4 }} src="assets/images/review_bg.png" alt="Couple kissing sunset" loading="lazy" />
+        <img
+          className="tr-backdrop"
+          src="/lts%20start%20your%20journey.jpg.jpeg"
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          decoding="async"
+        />
+        <div className="tr-hero-frame">
+          <motion.img
+            className="tr-hero-img"
+            initial={{ opacity: 0.9, scale: 1.04 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1.2 }}
+            src="/lts%20start%20your%20journey.jpg.jpeg"
+            alt="Traditional Indian Wedding Ceremony"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
         <div className="tr-veil" aria-hidden="true"></div>
         <div className="tr-content">
           <motion.div initial={{ opacity: 0, y: 35 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="tr-cred">
             <span className="tr-s1">Special Offer <span className="tick">·</span> Free Engagement Coverage with Full Traditional / Destination Package</span>
             <span className="tr-s2">the one day</span>
-            <span className="tr-s3">you'll want to <em style={{ fontStyle: 'italic' }}>live twice.</em></span>
+            <span className="tr-s3">you'll want to live twice.</span>
             <span className="tr-s4">
               <button className="btn" onClick={() => onNavigate('contact')}>
                 <span>Let's Start Your Journey</span>
@@ -926,18 +1159,18 @@ export default function Home({ onNavigate }) {
       </section>
 
       {/* Cinematic Vimeo Video Modal Overlay */}
-      <div 
-        className={`lightbox ${activeVideo ? 'open' : ''} ${lightboxLit ? 'lit' : ''}`} 
+      <div
+        className={`lightbox ${activeVideo ? 'open' : ''} ${lightboxLit ? 'lit' : ''}`}
         onClick={(e) => { if (e.target.classList.contains('lightbox')) closeVideoModal(); }}
         aria-hidden={!activeVideo}
       >
         <button className="close" onClick={closeVideoModal}>Close ✕</button>
         <div className="box">
           {activeVideo && (
-            <iframe 
+            <iframe
               src={`https://player.vimeo.com/video/${activeVideo}?autoplay=1&title=0&byline=0&portrait=0`}
-              allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media" 
-              allowFullScreen 
+              allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media"
+              allowFullScreen
               title="Wedding Film Preview"
             ></iframe>
           )}

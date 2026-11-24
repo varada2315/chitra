@@ -23,7 +23,7 @@ export default function Investment() {
             <span className="tier-no">I</span>
             <div className="media">
               <div className="feature-frame">
-                <img src="assets/images/exp_families.png" alt="The Moment Collection" />
+                <img src="assets/images/exp_families.webp" alt="The Moment Collection" loading="lazy" decoding="async" />
                 <div className="shade"></div>
               </div>
             </div>
@@ -52,7 +52,7 @@ export default function Investment() {
             <span className="tier-no">II</span>
             <div className="media">
               <div className="feature-frame">
-                <img src="assets/images/exp_weddings.png" alt="The Portrait Collection" />
+                <img src="assets/images/exp_weddings.webp" alt="The Portrait Collection" loading="lazy" decoding="async" />
                 <div className="shade"></div>
               </div>
             </div>
@@ -82,7 +82,7 @@ export default function Investment() {
             <span className="tier-no">III</span>
             <div className="media">
               <div className="feature-frame">
-                <img src="assets/images/exp_couples.png" alt="The Legacy Collection" />
+                <img src="assets/images/exp_couples.webp" alt="The Legacy Collection" loading="lazy" decoding="async" />
                 <div className="shade"></div>
               </div>
             </div>

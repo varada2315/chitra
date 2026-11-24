@@ -16,21 +16,21 @@ export default function Mentorship() {
         </svg>
       </div>
 
-      <section style={{ backgroundColor: "var(--bg-light)", padding: "8rem 0" }}>
+      <section className="mentorship-sec" style={{ backgroundColor: "var(--bg-light)", padding: "clamp(3.5rem, 8vh, 8rem) 0" }}>
         <div className="container">
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6rem", alignItems: "center" }}>
-            <div className="fade-in-up" style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
-              <h2 className="serif-italic" style={{ fontSize: "3rem" }}>GROW YOUR CREATIVE SPIRIT</h2>
-              <p style={{ opacity: 0.8 }}>We love mentoring other photographers. Whether you're just starting or looking to build a sustainable, full-time business, we offer custom 1-on-1 programs designed to give you clarity and direction.</p>
-              <p style={{ opacity: 0.8 }}>We cover branding, workflow, editing style, posing guides, search engine optimization, and client experience systems that actually work.</p>
+          <div className="mentorship-grid">
+            <div className="fade-in-up" style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+              <h2 className="serif-italic" style={{ fontSize: "clamp(2rem, 5vw, 3rem)" }}>GROW YOUR CREATIVE SPIRIT</h2>
+              <p style={{ opacity: 0.8, fontSize: '0.95rem', lineHeight: 1.65 }}>We love mentoring other photographers. Whether you're just starting or looking to build a sustainable, full-time business, we offer custom 1-on-1 programs designed to give you clarity and direction.</p>
+              <p style={{ opacity: 0.8, fontSize: '0.95rem', lineHeight: 1.65 }}>We cover branding, workflow, editing style, posing guides, search engine optimization, and client experience systems that actually work.</p>
               <div>
-                <a href="#" className="btn-pill btn-bronze">APPLY TO MENTORSHIP</a>
+                <a href="#contact" className="btn-pill btn-bronze">APPLY TO MENTORSHIP</a>
               </div>
             </div>
             
             <div className="fade-in-up">
-              <div className="img-arch" style={{ height: "520px" }}>
-                <img src="assets/images/meet_me_arch.png" alt="Mentorship session" />
+              <div className="img-arch" style={{ height: "clamp(340px, 45vw, 520px)" }}>
+                <img src="assets/images/meet_me_arch.webp" alt="Mentorship session" loading="lazy" decoding="async" />
               </div>
             </div>
           </div>
