@@ -11,11 +11,11 @@ export default defineConfig({
   server: {
     port: 7004,
     host: '0.0.0.0',
-    allowedHosts: ['chitra.cyberpunk.co.in', 'chitrademo2.cyberpunk.co.in', '.cyberpunk.co.in'],
+    allowedHosts: ['chitra.cyberpunk.co.in', 'chitrademo2.cyberpunk.co.in', '.cyberpunk.co.in', 'chitraweddings.com', '.chitraweddings.com'],
   },
   preview: {
     port: 7004,
     host: '0.0.0.0',
-    allowedHosts: ['chitra.cyberpunk.co.in', 'chitrademo2.cyberpunk.co.in', '.cyberpunk.co.in'],
+    allowedHosts: ['chitra.cyberpunk.co.in', 'chitrademo2.cyberpunk.co.in', '.cyberpunk.co.in', 'chitraweddings.com', '.chitraweddings.com'],
   },
 })
